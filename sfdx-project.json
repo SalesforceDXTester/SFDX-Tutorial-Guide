@@ -1,0 +1,36 @@
+{
+  "packageDirectories": [
+    {
+      "path": "firstCoursePackage",
+      "default": true,
+      "package": "FirstCoursePackage",
+      "versionName": "ver 0.1",
+      "versionNumber": "0.1.0.NEXT",
+      "versionDescription": "This is the begining of Packages on Salesforce"
+    },
+    {
+      "path": "secondCoursePackage",
+      "default": false,
+      "dependencies": [
+        {
+          "package": "FirstCoursePackage",
+          "versionNumber": "0.1.0.LATEST"
+        }
+      ],
+      "package": "SecondCoursePackage",
+      "versionName": "ver 0.1",
+      "versionNumber": "0.1.0.NEXT",
+      "versionDescription": "This is my second Package"
+    }
+  ],
+  "name": "SFDX-Tutorial Guide",
+  "namespace": "MA_SFDX_Course",
+  "sfdcLoginUrl": "https://login.salesforce.com",
+  "sourceApiVersion": "57.0",
+  "packageAliases": {
+    "FirstCoursePackage": "0HoDp000000XZEUKA4",
+    "FirstCoursePackage@0.1.0-2": "04tDp000000pgiQIAQ",
+    "SecondCoursePackage": "0HoDp000000XZEeKAO",
+    "SecondCoursePackage@0.1.0-1": "04tDp000000pqgJIAQ"
+  }
+}
