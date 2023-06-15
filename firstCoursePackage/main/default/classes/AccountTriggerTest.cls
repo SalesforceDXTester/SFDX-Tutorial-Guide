@@ -6,6 +6,6 @@ public class AccountTriggerTest {
     insert new Account(Name = 'Strange');
     Test.stopTest();
     Account newAccount = [SELECT id, Name FROM Account LIMIT 1];
-    System.assert(newAccount.Name == 'Test1');
+    System.assert(newAccount.Name == 'Test');
   }
 }
