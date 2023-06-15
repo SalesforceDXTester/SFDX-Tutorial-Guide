@@ -1,15 +1,15 @@
 name: SFDX Build
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      
+
       - name: Salesforce SFDX CLI Action
         # You may pin to the exact commit or the version.
         # uses: sfdx-actions/setup-sfdx@d6a953fdfe15e4d05ca910870457536a36dc60fe
@@ -17,14 +17,22 @@ jobs:
         with:
           # Authorize a Salesforce org using an SFDX auth URL
           sfdx-auth-url: ${{ secrets.DEVHUB_URL }}
-      
+
+      # Sets default devhub to make scratch orgs and packages against
       - name: Set Default DevHub
         run: sfdx force:config:set defaultdevhubusername=mandradesf@protonmail.com
-      
-      - name: Run a one-line script
-        run: echo Hello World
-        
-      - name: run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+      # Creates a scratch org to test our org
+      - name: Create Test Scratch org
+        run: sfdx force:org:create -a actionsBuild -d 1 -s -f config/project-scratch-def.json
+
+      # Push configurations to scratch
+      - name: Push Source
+        run: sfdx fource:source:push -f
+
+      # Run all apex tests
+      - name: Run All Apex Tests
+        run: sfdx force:apex:test:run -l RunLocalTests
+
+      #Delete Scratch org upon completion
+      - name: Delete Scratch Org
+        run: sfdx force:org:delete -p
