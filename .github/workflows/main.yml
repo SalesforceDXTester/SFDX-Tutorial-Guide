@@ -31,8 +31,8 @@ jobs:
 
       # Run all apex tests
       - name: Run All Apex Tests
-        run: sfdx apex:run:test -l RunLocalTests
+        run: sfdx apex:run:test -l RunLocalTests -w 30
 
-      #Delete Scratch org upon completion
+      # Delete Scratch org upon completion
       - name: Delete Scratch Org
         run: sfdx org:delete:scratch -o actionsBuild -p
