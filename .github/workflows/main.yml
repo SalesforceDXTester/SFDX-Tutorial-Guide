@@ -61,7 +61,7 @@ jobs:
       - name: Creating Package Version
         run: |
           echo $PACKAGE_NAME
-          PACKAGE_VERSION_JSON="$(eval sfdx force:package:version:list --concise --released --packages FirstCoursePackage --json | jq '.result | sort_by(-.MajorVersion, -.MinorVersion, -.PatchVersion, -.BuildNumber) | .[0] // ""')"
+          PACKAGE_VERSION_JSON="$(eval sfdx force:package:version:list --concise --packages FirstCoursePackage --json | jq '.result | sort_by(-.MajorVersion, -.MinorVersion, -.PatchVersion, -.BuildNumber) | .[0] // ""')"
           echo $PACKAGE_VERSION_JSON
           IS_RELEASED=$(jq -r '.IsReleased?' <<< $PACKAGE_VERSION_JSON)
           MAJOR_VERSION=$(jq -r '.MajorVersion?' <<< $PACKAGE_VERSION_JSON)
