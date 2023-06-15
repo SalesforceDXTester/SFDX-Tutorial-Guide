@@ -36,3 +36,43 @@ jobs:
       # Delete Scratch org upon completion
       - name: Delete Scratch Org
         run: sfdx org:delete:scratch -o actionsBuild -p
+
+  release:
+    needs: build
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Salesforce SFDX CLI Action
+        # You may pin to the exact commit or the version.
+        # uses: sfdx-actions/setup-sfdx@d6a953fdfe15e4d05ca910870457536a36dc60fe
+        uses: sfdx-actions/setup-sfdx@v1
+        with:
+          # Authorize a Salesforce org using an SFDX auth URL
+          sfdx-auth-url: ${{ secrets.DEVHUB_URL }}
+
+      # Sets default devhub to make scratch orgs and packages against
+      - name: Set Default DevHub
+        run: sfdx force:config:set defaultdevhubusername=mandradesf@protonmail.com
+
+      # Generates new package version Number based on the last released version of the package
+      - name: Creating Package Version
+        run: |
+          echo $PACKAGE_NAME
+          PACKAGE_VERSION_JSON="$(eval sfdx force:package:version:list --concise --released --packages FirstCoursePackage --json | jq '.result | sort_by(-.MajorVersion, -.MinorVersion, -.PatchVersion, -.BuildNumber) | .[0] // ""')"
+          echo $PACKAGE_VERSION_JSON
+          IS_RELEASED=$(jq -r '.IsReleased?' <<< $PACKAGE_VERSION_JSON)
+          MAJOR_VERSION=$(jq -r '.MajorVersion?' <<< $PACKAGE_VERSION_JSON)
+          MINOR_VERSION=$(jq -r '.MinorVersion?' <<< $PACKAGE_VERSION_JSON)
+          PATCH_VERSION=$(jq -r '.PatchVersion?' <<< $PACKAGE_VERSION_JSON)
+          BUILD_VERSION="NEXT"
+          if [ -z $MAJOR_VERSION ]; then MAJOR_VERSION=1; fi;
+          if [ -z $MINOR_VERSION ]; then MINOR_VERSION=0; fi;
+          if [ -z $PATCH_VERSION ]; then PATCH_VERSION=0; fi;
+          if [ "$IS_RELEASED" == "true" ]; then MINOR_VERSION=$(($MINOR_VERSION+1)); fi;
+          VERSION_NUMBER="$MAJOR_VERSION.$MINOR_VERSION.$PATCH_VERSION.$BUILD_VERSION"
+          echo $VERSION_NUMBER
+          PACKAGE_VERSION_ID="${eval sfdx force:package:version:create --package FirstCoursePackage --versionnumber $VERSION_NUMBER --installationkeybypass --wait 30 --json | jq -r '.result.SubscriberPackageVersionId'}
+          echo $PACKAGE_VERSION_ID
