@@ -23,16 +23,16 @@ jobs:
         run: sfdx force:config:set defaultdevhubusername=mandradesf@protonmail.com
       # Creates a scratch org to test our org
       - name: Create Test Scratch org
-        run: sfdx force:org:create -a actionsBuild -d 1 -s -f config/project-scratch-def.json
+        run: sfdx org:create:scratch -a actionsBuild -y 1 -d -f config/project-scratch-def.json
 
       # Push configurations to scratch
       - name: Push Source
-        run: sfdx fource:source:push -f
+        run: sfdx force:source:push -f
 
       # Run all apex tests
       - name: Run All Apex Tests
-        run: sfdx force:apex:test:run -l RunLocalTests
+        run: sfdx apex:run:test -l RunLocalTests
 
       #Delete Scratch org upon completion
       - name: Delete Scratch Org
-        run: sfdx force:org:delete -p
+        run: sfdx org:delete:scratch -o actionsBuild -p
